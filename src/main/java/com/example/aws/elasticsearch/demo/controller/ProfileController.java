@@ -50,8 +50,8 @@ public class ProfileController {
         return service.searchByTechnology(technology);
     }
 
-    @DeleteMapping("/leads/{id}")
-    public String deleteLeadNameDocument(@PathVariable String id) throws Exception {
+    @DeleteMapping("/profiles/{id}")
+    public String deleteProfileDocument(@PathVariable String id) throws Exception {
 
         return service.deleteProfileDocument(id);
 
