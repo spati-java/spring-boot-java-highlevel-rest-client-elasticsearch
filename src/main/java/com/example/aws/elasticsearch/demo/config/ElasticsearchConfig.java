@@ -18,8 +18,7 @@ public class ElasticsearchConfig {
     public RestHighLevelClient restClient() {
 
         RestHighLevelClient client = new RestHighLevelClient(
-                RestClient.builder(
-                        new HttpHost(elasticsearchHost)));
+                RestClient.builder(new HttpHost(elasticsearchHost)));
 
         return client;
 
