@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController()
+@RequestMapping("/api/v1/profiles")
 public class ProfileController {
 
     private ProfileService service;
@@ -21,39 +22,38 @@ public class ProfileController {
         this.service = service;
     }
 
-    @PostMapping("/profiles")
+    @PostMapping
     public ResponseEntity createProfile(@RequestBody ProfileDocument document) throws Exception {
 
         return new ResponseEntity(service.createProfileDocument(document), HttpStatus.CREATED);
     }
 
-
-    @PutMapping("/profiles")
+    @PutMapping
     public ResponseEntity updateProfile(@RequestBody ProfileDocument document) throws Exception {
 
         return new ResponseEntity(service.updateProfile(document), HttpStatus.CREATED);
     }
 
-    @GetMapping("/profiles/{id}")
+    @GetMapping("/{id}")
     public ProfileDocument findById(@PathVariable String id) throws Exception {
 
         return service.findById(id);
     }
 
 
-    @GetMapping("/profiles")
+    @GetMapping
     public List<ProfileDocument> findAll() throws Exception {
 
         return service.findAll();
     }
 
-    @GetMapping(value = "/profiles/search")
+    @GetMapping(value = "/search")
     public List<ProfileDocument> search(
             @RequestParam(value = "technology") String technology) throws Exception {
         return service.searchByTechnology(technology);
     }
 
-    @DeleteMapping("/profiles/{id}")
+    @DeleteMapping("/{id}")
     public String deleteProfileDocument(@PathVariable String id) throws Exception {
 
         return service.deleteProfileDocument(id);
