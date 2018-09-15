@@ -4,6 +4,8 @@ import com.example.aws.elasticsearch.demo.document.ProfileDocument;
 import com.example.aws.elasticsearch.demo.service.ProfileService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,15 +22,16 @@ public class ProfileController {
     }
 
     @PostMapping("/profiles")
-    public String createName(@RequestBody ProfileDocument document) throws Exception {
-        return service.createProfileDocument(document);
+    public ResponseEntity createProfile(@RequestBody ProfileDocument document) throws Exception {
+
+        return new ResponseEntity(service.createProfileDocument(document), HttpStatus.CREATED);
     }
 
 
     @PutMapping("/profiles")
-    public String updateProfile(@RequestBody ProfileDocument document) throws Exception {
+    public ResponseEntity updateProfile(@RequestBody ProfileDocument document) throws Exception {
 
-        return service.updateProfile(document);
+        return new ResponseEntity(service.updateProfile(document), HttpStatus.CREATED);
     }
 
     @GetMapping("/profiles/{id}")
