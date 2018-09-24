@@ -17,6 +17,8 @@ import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 
+import org.elasticsearch.index.query.MatchQueryBuilder;
+import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -66,8 +68,8 @@ public class ProfileService {
 
             return convertMapToProfileDocument(resultMap);
 
-
     }
+
 
 
     public String updateProfile(ProfileDocument document) throws Exception {
@@ -91,7 +93,7 @@ public class ProfileService {
     public List<ProfileDocument> findAll() throws Exception {
 
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = buildSearchRequest(INDEX,TYPE);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         searchSourceBuilder.query(QueryBuilders.matchAllQuery());
         searchRequest.source(searchSourceBuilder);
@@ -99,24 +101,34 @@ public class ProfileService {
         SearchResponse searchResponse =
                 client.search(searchRequest, RequestOptions.DEFAULT);
 
-        SearchHit[] searchHit = searchResponse.getHits()
-                .getHits();
-
-        if (searchHit.length > 0) {
-
-            ArrayList<ProfileDocument> profileDocuments = new ArrayList<>();
-
-            Arrays.stream(searchHit)
-                    .forEach(hit ->
-                            profileDocuments.add(objectMapper.convertValue(hit.getSourceAsMap(),
-                                    ProfileDocument.class))
-                    );
-
-            return profileDocuments;
-        }
-
-        return new ArrayList<>();
+        return getSearchResult(searchResponse);
     }
+
+
+    public List<ProfileDocument> findProfileByName(String name) throws Exception{
+
+
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.indices(INDEX);
+        searchRequest.types(TYPE);
+
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+        MatchQueryBuilder matchQueryBuilder = QueryBuilders
+                .matchQuery("name",name)
+                .operator(Operator.AND);
+
+        searchSourceBuilder.query(matchQueryBuilder);
+
+        searchRequest.source(searchSourceBuilder);
+
+        SearchResponse searchResponse =
+                client.search(searchRequest, RequestOptions.DEFAULT);
+
+        return getSearchResult(searchResponse);
+
+    }
+
 
     public String deleteProfileDocument(String id) throws Exception {
 
@@ -140,7 +152,7 @@ public class ProfileService {
 
     public List<ProfileDocument> searchByTechnology(String technology) throws Exception{
 
-        SearchRequest searchRequest = new SearchRequest();
+        SearchRequest searchRequest = buildSearchRequest(INDEX,TYPE);
         SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 
         QueryBuilder queryBuilder = QueryBuilders
@@ -157,22 +169,28 @@ public class ProfileService {
         return getSearchResult(response);
     }
 
-    private List<ProfileDocument> getSearchResult(SearchResponse response){
+    private List<ProfileDocument> getSearchResult(SearchResponse response) {
 
-        SearchHit[] searchHit = response.getHits()
-                .getHits();
+        SearchHit[] searchHit = response.getHits().getHits();
 
         List<ProfileDocument> profileDocuments = new ArrayList<>();
 
-        if (searchHit.length > 0) {
-
-            Arrays.stream(searchHit)
-                    .forEach(hit ->
-                            profileDocuments.add(objectMapper.convertValue(hit.getSourceAsMap(),
-                                    ProfileDocument.class))
-                    );
+        for (SearchHit hit : searchHit){
+            profileDocuments
+                    .add(objectMapper
+                            .convertValue(hit
+                                    .getSourceAsMap(), ProfileDocument.class));
         }
 
         return profileDocuments;
+    }
+
+    private SearchRequest buildSearchRequest(String index, String type) {
+
+        SearchRequest searchRequest = new SearchRequest();
+        searchRequest.indices(index);
+        searchRequest.types(type);
+
+        return searchRequest;
     }
 }

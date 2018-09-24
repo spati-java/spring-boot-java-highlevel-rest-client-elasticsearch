@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController()
-@RequestMapping("/api/v1/profiles")
 public class ProfileController {
 
     private ProfileService service;
@@ -20,6 +19,12 @@ public class ProfileController {
     public ProfileController(ProfileService service) {
 
         this.service = service;
+    }
+
+    @GetMapping("/test")
+    public String test(){
+
+        return "Success";
     }
 
     @PostMapping
@@ -40,7 +45,6 @@ public class ProfileController {
         return service.findById(id);
     }
 
-
     @GetMapping
     public List<ProfileDocument> findAll() throws Exception {
 
@@ -48,10 +52,15 @@ public class ProfileController {
     }
 
     @GetMapping(value = "/search")
-    public List<ProfileDocument> search(
-            @RequestParam(value = "technology") String technology) throws Exception {
+    public List<ProfileDocument> search(@RequestParam(value = "technology") String technology) throws Exception {
         return service.searchByTechnology(technology);
     }
+
+    @GetMapping(value = "/api/v1/profiles/name-search")
+    public List<ProfileDocument> searchByName(@RequestParam(value = "name") String name) throws Exception {
+        return service.findProfileByName(name);
+    }
+
 
     @DeleteMapping("/{id}")
     public String deleteProfileDocument(@PathVariable String id) throws Exception {
