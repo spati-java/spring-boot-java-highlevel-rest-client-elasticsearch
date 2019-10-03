@@ -9,7 +9,10 @@ import com.example.aws.elasticsearch.demo.model.Technologies;
 public class ProfileDocument {
 
     private String id;
-    private String name;
-
+    private String firstName;
+    private String lastName;
+    private List<Technologies> technologies;
+    private Location location;
+    private List<String> emails;
 
 }

@@ -27,7 +27,7 @@ public class ProfileController {
         return "Success";
     }
 
-    @PostMapping
+    @PostMapping("/profiles")
     public ResponseEntity createProfile(@RequestBody ProfileDocument document) throws Exception {
 
         return new ResponseEntity(service.createProfileDocument(document), HttpStatus.CREATED);

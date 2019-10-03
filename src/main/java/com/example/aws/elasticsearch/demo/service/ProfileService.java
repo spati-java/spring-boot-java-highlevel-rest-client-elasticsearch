@@ -17,6 +17,7 @@ import org.elasticsearch.action.update.UpdateResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.MatchQueryBuilder;
 import org.elasticsearch.index.query.Operator;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -53,7 +54,7 @@ public class ProfileService {
         document.setId(uuid.toString());
 
         IndexRequest indexRequest = new IndexRequest(INDEX, TYPE, document.getId())
-                .source(convertProfileDocumentToMap(document));
+                .source(convertProfileDocumentToMap(document), XContentType.JSON);
 
         IndexResponse indexResponse = client.index(indexRequest, RequestOptions.DEFAULT);
         return indexResponse.getResult().name();
